@@ -1,7 +1,12 @@
 
 #include <iostream>
 
+#include "Statement.hpp"
+
 int	main(int ac, char **av)
 {
-	std::cout << "ez project" << std::endl;
+	std::string line;
+	
+	std::getline (std::cin, line);
+	Statement s(line);	
 }
