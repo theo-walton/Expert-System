@@ -201,7 +201,54 @@ void	Statement::fill_functions(void)
 
 void	Statement::generate_permutations(void)
 {
+	//go through rpn string and get all operands that appear in it A, B, C ect..
+
+	std::string permutation = "UUUUUUUUUUUUUUUUUUUUUUUUUU";
+	size_t operandOccur[26] = {0};
+
+	for (char c : _rpn)
+		if (std::isupper(c))
+			operandOccur[c - 'A']++;
 	
+	size_t totalOperands = 0;
+	for (size_t occur : operandOccur)
+		if (occur)
+			totalOperands++;
+
+	size_t operands[totalOperands];
+	size_t operandsFilled = 0;
+	for (size_t i = 0; i < 26; i++)
+	{
+		if (operandOccur[i])
+		{
+			operands[operandsFilled] = i;
+			operandsFilled++;
+		}
+	}
+	
+	size_t bits[totalOperands];
+	for (size_t i = 0; i < totalOperands; i++)
+	{
+		bits[i] = (0 << i) ^ (0 << (i - 1));
+	}
+	
+	size_t limit = std::pow(2, totalOperands);
+	for (size_t n = 0; n < limit; n++)
+	{
+		for (size_t index = 0; index < totalOperands; index++)
+		{
+			permutation[operands[index]] = (n & bits[index] ? 'T' : 'F');
+			try
+			{
+				eval_expr(permutation);
+			}
+			catch (std::exception)
+			{
+				std::cout << "bad statement" << std::endl;
+				exit(1);
+			}
+		}
+	}
 }
 
 Statement::Statement(std::string expression)
@@ -209,8 +256,6 @@ Statement::Statement(std::string expression)
 	convert_to_rpn(expression);
 	fill_functions();
 	generate_permutations();
-	
-	std::cout << _rpn << std::endl;
 }
 
 const std::vector<std::string>&	Statement::Table(void)

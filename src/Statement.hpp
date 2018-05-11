@@ -4,6 +4,7 @@
 #include <stack>
 #include <vector>
 #include <string>
+#include <cmath>
 
 #define IMPLIES_TOK '0'
 #define XOR_TOK '1'
@@ -25,7 +26,7 @@ class	Statement
 
 	void	convert_to_rpn(std::string&);
 	void	fill_functions(void);
-	void	eval_expr(std::string values);
+	void	eval_expr(std::string& values);
 	void	generate_permutations(void);
 	
 public:
