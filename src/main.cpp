@@ -2,11 +2,16 @@
 #include <iostream>
 
 #include "Statement.hpp"
+#include "Reasoning.hpp"
 
 int	main(int ac, char **av)
 {
-	std::string line;
-	
-	std::getline (std::cin, line);
-	Statement s(line);	
+	std::vector<Statement> statements;
+
+	for (int i = 1; i < ac; i++)
+	{
+		statements.push_back(Statement(av[i]));
+	}
+
+	Reasoning r(statements);
 }

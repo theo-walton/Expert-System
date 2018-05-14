@@ -66,7 +66,7 @@ static int	priority(char token)
 		return 1;
 	if (token == IFF_TOK)
 		return 0;
-	return 6;
+	return -1;
 }
 
 void	Statement::convert_to_rpn(std::string& expression)
@@ -79,6 +79,11 @@ void	Statement::convert_to_rpn(std::string& expression)
 		{
 			while (_stack.size() != 0)
 			{
+				if (_stack.top() == OPEN_TOK)
+				{
+					std::cout << "badly bracketed expression" << std::endl;
+					exit(1);
+				}
 				_rpn += _stack.top();
 				_stack.pop();
 			}
@@ -128,13 +133,19 @@ void	Statement::eval_expr(std::string& values)
 		}
 		else
 		{
-			if ((_stack.size() < 2 && token != NOT_TOK) || (_stack.size() < 1))
+			if ((_operands.size() < 2 && token != NOT_TOK) || (_operands.size() < 1))
+			{
+				std::cout << "insuficient operands" << std::endl;
 				throw std::exception();
+			}
 			_functions[token - '0']();
 		}
 	}
 	if (_operands.size() != 1)
+	{
+		std::cout << "invalid stack" << std::endl;
 		throw std::exception();
+	}
 
 	if (_operands.top())
 	{
@@ -148,54 +159,54 @@ void	Statement::fill_functions(void)
 	//implies
 	_functions.push_back([this]()
 			     {
-				     bool b = _stack.top();
-				     _stack.pop();
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(!a || b);
+				     bool b = _operands.top();
+				     _operands.pop();
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(!a || b);
 			     });
 	//xor
 	_functions.push_back([this]()
 			     {
-				     bool b = _stack.top();
-				     _stack.pop();
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(a ^ b);
+				     bool b = _operands.top();
+				     _operands.pop();
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(a ^ b);
 			     });
 	//or
 	_functions.push_back([this]()
 			     {
-				     bool b = _stack.top();
-				     _stack.pop();
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(a | b);
+				     bool b = _operands.top();
+				     _operands.pop();
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(a | b);
 			     });
 	//and
 	_functions.push_back([this]()
 			     {
-				     bool b = _stack.top();
-				     _stack.pop();
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(a & b);
+				     bool b = _operands.top();
+				     _operands.pop();
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(a & b);
 			     });
 	//not
 	_functions.push_back([this]()
 			     {
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(!a);
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(!a);
 			     });
 	//iff
 	_functions.push_back([this]()
 			     {
-				     bool b = _stack.top();
-				     _stack.pop();
-				     bool a = _stack.top();
-				     _stack.pop();
-				     _stack.push(a == b);
+				     bool b = _operands.top();
+				     _operands.pop();
+				     bool a = _operands.top();
+				     _operands.pop();
+				     _operands.push(a == b);
 			     });
 }
 
@@ -203,6 +214,8 @@ void	Statement::generate_permutations(void)
 {
 	//go through rpn string and get all operands that appear in it A, B, C ect..
 
+	std::cout << _rpn << std::endl;
+	
 	std::string permutation = "UUUUUUUUUUUUUUUUUUUUUUUUUU";
 	size_t operandOccur[26] = {0};
 
@@ -229,24 +242,25 @@ void	Statement::generate_permutations(void)
 	size_t bits[totalOperands];
 	for (size_t i = 0; i < totalOperands; i++)
 	{
-		bits[i] = (0 << i) ^ (0 << (i - 1));
+		bits[i] = 1 << i;
 	}
-	
+
 	size_t limit = std::pow(2, totalOperands);
 	for (size_t n = 0; n < limit; n++)
 	{
 		for (size_t index = 0; index < totalOperands; index++)
 		{
 			permutation[operands[index]] = (n & bits[index] ? 'T' : 'F');
-			try
-			{
-				eval_expr(permutation);
-			}
-			catch (std::exception)
-			{
-				std::cout << "bad statement" << std::endl;
-				exit(1);
-			}
+		}
+		try
+		{
+//			std::cout << permutation << std::endl;
+			eval_expr(permutation);
+		}
+		catch (std::exception)
+		{
+			std::cout << "bad statement" << std::endl;
+			exit(1);
 		}
 	}
 }

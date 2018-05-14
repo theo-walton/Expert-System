@@ -1,6 +1,6 @@
 NAME = expert_system
 
-FLAGS = -Wfatal-errors -std=c++14
+FLAGS = -Wfatal-errors -std=c++14 -O3 -march=native
 
 SRC =  ./src/*.cpp
 
