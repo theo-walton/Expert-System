@@ -23,6 +23,7 @@ class	Statement
 	std::stack<char> _stack;
 	std::stack<bool> _operands;
 	std::vector<std::function<void()> > _functions;
+	std::string _expression;
 
 	void	convert_to_rpn(std::string&);
 	void	fill_functions(void);
@@ -34,4 +35,5 @@ public:
 	Statement(std::string expression);
 	
 	const std::vector<std::string>&	Table(void);
+	void	Print(void);
 };

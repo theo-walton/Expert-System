@@ -18,5 +18,5 @@ class	Reasoning
 public:
 
 	Reasoning(std::vector<Statement>&);
-	char	Query(char operand);
+	void	Query(char operand);
 };

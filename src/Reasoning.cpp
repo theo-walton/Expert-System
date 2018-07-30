@@ -84,23 +84,34 @@ Reasoning::Reasoning(std::vector<Statement>& statements) : _statements(statement
 	for (int i = 1; i < statements.size(); i++)
 	{
 		_similar = table_match(_similar, statements[i].Table());
-	}
 
-	if (_similar.size() == 0)
-	{
-		std::cout << "contradicting input" << std::endl;
-		exit(1);
+		if (_similar.size() == 0)
+		{
+			std::cout << "contradiction introduced from statement "
+				  << i + 1 << std::endl;
+			exit(1);
+		}
 	}
 	
 	tally_table();
 }
 
-char	Reasoning::Query(char operand)
+void	Reasoning::Query(char operand)
 {
 	if (!std::isupper(operand))
 	{
 		std::cout << "invalid query" << std::endl;
-		return 'F';
+		return;
 	}
-	return _table['A' - operand];
+
+	std::cout << operand << " ";
+	
+	if (_table[operand - 'A'] == 'T')
+		std::cout << "is true" << std::endl;
+	else if (_table[operand - 'A'] == 'F')
+		std::cout << "is false" << std::endl;
+	else if (_table[operand - 'A'] == UNKNOWN_1)
+		std::cout << "is \"false by default\"" << std::endl;
+	else
+		std::cout << "is undetermined" << std::endl;
 }

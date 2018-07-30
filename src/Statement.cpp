@@ -214,8 +214,6 @@ void	Statement::generate_permutations(void)
 {
 	//go through rpn string and get all operands that appear in it A, B, C ect..
 
-	std::cout << _rpn << std::endl;
-	
 	std::string permutation = "UUUUUUUUUUUUUUUUUUUUUUUUUU";
 	size_t operandOccur[26] = {0};
 
@@ -265,7 +263,7 @@ void	Statement::generate_permutations(void)
 	}
 }
 
-Statement::Statement(std::string expression)
+Statement::Statement(std::string expression) : _expression(expression)
 {
 	convert_to_rpn(expression);
 	fill_functions();
@@ -276,3 +274,9 @@ const std::vector<std::string>&	Statement::Table(void)
 {
 	return _truthTable;
 }
+
+void	Statement::Print(void)
+{
+	std::cout << _expression << std::endl;
+}
+
